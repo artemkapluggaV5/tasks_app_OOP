@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# PyCharm
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Environment variables
+.env
+.venv/
+env/
+venv/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Logs
+*.log
+
+# byte-compiled
+*.py[cod]
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
