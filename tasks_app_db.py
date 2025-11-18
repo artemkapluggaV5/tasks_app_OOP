@@ -3,7 +3,7 @@ import sqlite3
 DATABASE = "tasks.db"
 
 
-# --- Шаг 1: Подготовка базы данных ---
+# Шаг 1: Подготовка базы данных
 def init_database():
 
     with sqlite3.connect(DATABASE) as conn:
@@ -20,7 +20,7 @@ def init_database():
         conn.commit()
 
 
-# --- Шаг 2: Загрузка задач из базы данных ---
+# Шаг 2: Загрузка задач из базы данных
 def load_tasks():
 
     with sqlite3.connect(DATABASE) as conn:
@@ -31,7 +31,7 @@ def load_tasks():
         return cursor.fetchall()
 
 
-# --- Шаг 3: Просмотр задач ---
+# Шаг 3: Просмотр задач
 def view_tasks():
     tasks = load_tasks()
 
@@ -44,7 +44,7 @@ def view_tasks():
     print("--------------------")
 
 
-# --- Шаг 4: Добавление новой задачи ---
+# Шаг 4: Добавление новой задачи
 def add_task():
     title = input("Введите название задачи: ")
     priority = input("Введите приоритет (Низкий/Средний/Высокий): ")
@@ -57,7 +57,7 @@ def add_task():
     print("Задача успешно добавлена.")
 
 
-# --- Шаг 5: Удаление задачи ---
+# Шаг 5: Удаление задачи
 def delete_task():
     view_tasks()
 
@@ -78,7 +78,7 @@ def delete_task():
             print("Задача удалена.")
 
 
-# --- Шаг 6: Обновление задачи (Дополнительно) ---
+# Шаг 6: Обновление задачи (Дополнительно)
 def update_task():
     view_tasks()
 
@@ -105,7 +105,7 @@ def update_task():
             print("Задача обновлена.")
 
 
-# --- Шаг 7: Главное меню программы ---
+# Шаг 7: Главное меню программы
 def main():
 
     print("Добро пожаловать в менеджер задач с БД (SQLite)!")
