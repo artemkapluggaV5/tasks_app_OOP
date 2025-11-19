@@ -3,35 +3,49 @@ import sqlite3
 DATABASE = "tasks.db"
 
 
-# Шаг 1: Подготовка базы данных
 def init_database():
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
 
         cursor.execute("""
-            CREATE TABLE IF NOT EXISTS tasks (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                title TEXT NOT NULL,
-                priority TEXT NOT NULL,
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-            )
-        """)
+                    CREATE TABLE IF NOT EXISTS priorities (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        name TEXT NOT NULL UNIQUE
+                    )
+                """)
+
+        cursor.executemany("INSERT OR IGNORE INTO priorities (name) VALUES (?)",
+                           [('Низкий',), ('Средний',), ('Высокий',)])
+
+        cursor.execute("""
+                    CREATE TABLE IF NOT EXISTS tasks (
+                        id INTEGER PRIMARY KEY AUTOINCREMENT,
+                        title TEXT NOT NULL,
+                        priority_id INTEGER NOT NULL,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                        FOREIGN KEY (priority_id) REFERENCES priorities (id)
+                    )
+                """)
         conn.commit()
 
 
-# Шаг 2: Загрузка задач из базы данных
 def load_tasks():
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
 
-        cursor.execute("SELECT id, title, priority FROM tasks ORDER BY created_at DESC")
+        query = """
+                   SELECT tasks.id, tasks.title, priorities.name 
+                   FROM tasks 
+                   JOIN priorities ON tasks.priority_id = priorities.id 
+                   ORDER BY tasks.created_at DESC
+               """
+        cursor.execute(query)
 
         return cursor.fetchall()
 
 
-# Шаг 3: Просмотр задач
 def view_tasks():
     tasks = load_tasks()
 
@@ -44,20 +58,26 @@ def view_tasks():
     print("--------------------")
 
 
-# Шаг 4: Добавление новой задачи
 def add_task():
     title = input("Введите название задачи: ")
     priority = input("Введите приоритет (Низкий/Средний/Высокий): ")
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
-        cursor.execute("INSERT INTO tasks (title, priority) VALUES (?, ?)", (title, priority))
-        conn.commit()
+        try:
 
-    print("Задача успешно добавлена.")
+            cursor.execute("""
+                        INSERT INTO tasks (title, priority_id) 
+                        VALUES (?, (SELECT id FROM priorities WHERE name = ?))
+                    """, (title, priority))
+
+            conn.commit()
+            print("Задача успешно добавлена.")
+
+        except sqlite3.IntegrityError:
+            print(f"Ошибка: Приоритета '{priority}' нет в базе. Используйте: Низкий, Средний, Высокий.")
 
 
-# Шаг 5: Удаление задачи
 def delete_task():
     view_tasks()
 
@@ -78,7 +98,6 @@ def delete_task():
             print("Задача удалена.")
 
 
-# Шаг 6: Обновление задачи (Дополнительно)
 def update_task():
     view_tasks()
 
@@ -93,19 +112,24 @@ def update_task():
 
     with sqlite3.connect(DATABASE) as conn:
         cursor = conn.cursor()
-        cursor.execute(
-            "UPDATE tasks SET title = ?, priority = ? WHERE id = ?",
-            (new_title, new_priority, task_id)
-        )
+        try:
+            cursor.execute("""
+                        UPDATE tasks 
+                        SET title = ?, 
+                            priority_id = (SELECT id FROM priorities WHERE name = ?) 
+                        WHERE id = ?
+                    """, (new_title, new_priority, task_id))
 
-        if cursor.rowcount == 0:
-            print(f"Задача с ID {task_id} не найдена, обновление невозможно.")
-        else:
-            conn.commit()
-            print("Задача обновлена.")
+            if cursor.rowcount == 0:
+                print(f"Задача с ID {task_id} не найдена.")
+            else:
+                conn.commit()
+                print("Задача обновлена.")
+
+        except sqlite3.IntegrityError:
+            print(f"Ошибка: Приоритета '{new_priority}' нет в базе.")
 
 
-# Шаг 7: Главное меню программы
 def main():
 
     print("Добро пожаловать в менеджер задач с БД (SQLite)!")
