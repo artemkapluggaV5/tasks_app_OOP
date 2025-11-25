@@ -41,6 +41,7 @@ class TaskManager:
         except Exception as e:
             print(f"Произошла ошибка: {e}")
 
+
     def delete_task(self):
         print("\n--- Удаление задачи ---")
         try:

@@ -37,8 +37,7 @@ class Database:
                                    user_id INTEGER,
                                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                                    FOREIGN KEY (user_id)
-                                   REFERENCES users(id)
-                                   ON DELETE SET NULL)
+                                   REFERENCES users(id) ON DELETE SET NULL)
                                """)
 
 

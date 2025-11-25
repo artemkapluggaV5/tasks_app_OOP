@@ -7,11 +7,10 @@ class App:
     def __init__(self):
         self.db = Database()
         self.db.create_tables()
-
         self.manager = TaskManager(self.db)
 
     def run(self):
-        print("Добро пожаловать в ООП менеджер задач (PostgreSQL)!")
+        print("Добро пожаловать в объектно-ориентированный менеджер задач!")
 
         while True:
             print("\nМеню:")
@@ -41,6 +40,7 @@ class App:
 
             elif choice == "4":
                 self.manager.update_task()
+
 
             elif choice == "0":
                 print("Выход из программы.")
