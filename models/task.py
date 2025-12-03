@@ -1,6 +1,5 @@
 class Task:
 
-
     def __init__(self, id, title, priority, user_id, created_at):
         self.id = id
         self.title = title

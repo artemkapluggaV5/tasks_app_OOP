@@ -1,7 +1,6 @@
 from services.database import Database
 from services.task_manager import TaskManager
 
-
 class App:
 
     def __init__(self):
